@@ -1,0 +1,14 @@
+# Node modules
+node_modules/
+
+# Environment files
+.env
+
+# JSON files with sensitive data
+business_knowledge.json
+
+#google cloud credentials
+credentials.json
+
+package-lock.json
+package.json

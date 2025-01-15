@@ -1,8 +1,25 @@
+const express = require("express");
+const bodyParser = require("body-parser");
 const { google } = require('googleapis');
 const fs = require('fs');
 const fetchTrends = require("./gpt_research.js");
 const { Document, Packer, Paragraph } = require('docx');
-const {loadKnowledge, saveKnowledge, updateMemory} = require("./memory.js");
+const {updateMemory} = require("./memory.js");
+
+async function fetchGPTResponse(prompt) {
+  try {
+    // Call the GPT research logic
+    const gptResponse = await fetchTrends(prompt);
+
+    // Update memory with the interaction
+    await updateMemory(prompt, gptResponse);
+
+    return gptResponse;
+  } catch (error) {
+    console.error("Error fetching GPT response:", error.message);
+    throw error; // Rethrow the error to be handled by the server
+  }
+}
 
 // Path to your service account key file
 //const keyFilePath = './credentials.json';
@@ -62,18 +79,16 @@ const {loadKnowledge, saveKnowledge, updateMemory} = require("./memory.js");
   }
 } */
 
-async function main() {
+async function fetchGPTResponse(prompt) {
   try{
     const folderId = '1QH0aa9-p6-wauTiUqMzmUOh9trGmr2Zy';
-    const prompt = "who is Eduardo?"
-    const gptResearch  = await fetchTrends(prompt);
-    await updateMemory(prompt, gptResearch);
-    console.log("GPT Research Result:", gptResearch);
+    const gptResponse = await fetchTrends(prompt);
+    await updateMemory(prompt, gptResponse);
 
     const title = prompt.split(':')[0].trim();
     const safeTitle = title.replace(/[^a-zA-Z0-9]/g, '_');
     const fileName = `${safeTitle}.docx`;
-
+    return gptResponse;
     /* const filePath = `./${fileName}`;
     await saveToWord(gptResearch, filePath);
     await uploadFile(filePath, fileName, folderId); */
@@ -84,4 +99,4 @@ async function main() {
 }
 
 module.exports = updateMemory;
-main();
+module.exports = { fetchGPTResponse };

@@ -14,20 +14,18 @@ const openai = new OpenAI({
 async function fetchTrends(topic) {
     try {
         const knowledge = await loadKnowledge();
-        const memory = JSON.stringify(knowledge.memory, null, 2);
+        const memory = JSON.stringify(knowledge, null, 2);
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
                 { "role": "system", 
-                    "content": `Here is the business knowledge base:
-                    ${knowledge}
-                    here's your memory: ${memory}
-                  `},
+                    "content": `Here is your knowledge base: ${memory} your name is Tortipapa, and you're an assistant in McCarthy Academy`},
                 { "role": "user", "content": `${topic}`},
             ]
         });
         const content = response.choices[0].message.content;
         updateMemory;
+        console.log(memory);
         //console.log(`Trends in ${topic}:\n${content}`);
         return content;
     } catch (error) {

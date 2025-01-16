@@ -5,7 +5,7 @@ async function loadKnowledge() {
     try {
       if (fs.existsSync(knowledgeFilePath)) {
         const data = fs.readFileSync(knowledgeFilePath, 'utf8');
-        return JSON.parse(data); // Convertir el contenido a un objeto
+        return JSON.parse(data); //Convertir el contenido a un objeto
       } else {
         console.log("El archivo JSON no existe. Creando uno nuevo...");
         fs.writeFileSync(knowledgeFilePath, JSON.stringify({}, null, 2), 'utf8');

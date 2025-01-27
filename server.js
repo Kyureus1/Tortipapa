@@ -1,7 +1,8 @@
 const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
-const { fetchGPTResponse } = require("./script.js");
+const { createDocumentWithKeywords } = require('./generateKeywordsDoc');
+const { handleNonSEOPrompt } = require("./script");
 
 const app = express();
 const port = 3000;
@@ -10,7 +11,7 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname)));
 
-// Endpoint to handle GPT requests
+// Endpoint to handle general GPT requests
 app.post("/ask", async (req, res) => {
   const { prompt } = req.body;
 
@@ -19,20 +20,28 @@ app.post("/ask", async (req, res) => {
   }
 
   try {
-    // Delegate the GPT response to script.js
-    const gptResponse = await fetchGPTResponse(prompt);
-    res.json({ response: gptResponse });
+    // Determine if the prompt is SEO-related
+    if (prompt.toLowerCase().includes("seo")) {
+      // Handle SEO prompt
+      await createDocumentWithKeywords(prompt);
+      res.json({ message: "The SEO document has been created successfully." });
+    } else {
+      // Handle non-SEO prompt
+      const response = await handleNonSEOPrompt(prompt);
+      res.json({ message: "Non-SEO response processed successfully.", response });
+    }
   } catch (error) {
-    console.error("Error processing request:", error.message);
-    res.status(500).json({ error: error.message });
+    console.error("Error processing request:", error);
+    res.status(500).json({ error: error.message || "An error occurred" });
   }
 });
 
 // Start the server
 app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-  });
+  console.log(`Server running on http://localhost:${port}`);
+});
 
+// 404 Handler
 app.use((req, res) => {
-    res.status(404).send("Page not found");
-  });
+  res.status(404).send("Page not found");
+});

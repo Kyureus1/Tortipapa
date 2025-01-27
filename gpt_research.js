@@ -34,4 +34,4 @@ async function fetchTrends(topic) {
     }
 }
 
-module.exports = fetchTrends;
+module.exports = { fetchTrends };

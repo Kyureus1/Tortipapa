@@ -54,4 +54,9 @@ async function saveKnowledge(data) {
     }
 }
 
-module.exports = {loadKnowledge, saveKnowledge, updateMemory};
+function saveKeywordsToFile(keywords) {
+  fs.writeFileSync("seo_keywords.txt", keywords);
+  console.log("Keywords saved to seo_keywords.txt");
+}
+
+module.exports = {loadKnowledge, saveKnowledge, updateMemory, saveKeywordsToFile};

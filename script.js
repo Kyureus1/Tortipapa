@@ -1,10 +1,21 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const { google } = require('googleapis');
-const fs = require('fs');
-const fetchTrends = require("./gpt_research.js");
-const { Document, Packer, Paragraph } = require('docx');
+const { fetchTrends } = require("./gpt_research.js");
 const {updateMemory} = require("./memory.js");
+
+async function handleNonSEOPrompt(prompt) {
+  try {
+    // Process the non-SEO prompt
+    const gptResponse = await fetchTrends(prompt);
+
+    // Optionally update memory with the interaction
+    await updateMemory(prompt, gptResponse);
+
+    console.log("Non-SEO response processed:", gptResponse);
+    return gptResponse;
+  } catch (error) {
+    console.error("Error processing non-SEO prompt:", error.message);
+    throw error; // Rethrow to handle in server.js
+  }
+}
 
 async function fetchGPTResponse(prompt) {
   try {
@@ -100,3 +111,4 @@ async function fetchGPTResponse(prompt) {
 
 module.exports = updateMemory;
 module.exports = { fetchGPTResponse };
+module.exports = { handleNonSEOPrompt };
